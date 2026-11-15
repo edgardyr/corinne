@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Árbol de Navidad con sus nombres · corinne</title>
+  <meta name="description" content="Un árbol de Navidad con los nombres de tu familia, impreso en 3D en los colores que elijas.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="corinne">
+  <meta property="og:title" content="Árbol de Navidad con sus nombres · corinne">
+  <meta property="og:description" content="Ármalo con los nombres de tu familia y los colores que quieras.">
+  <meta property="og:url" content="https://edgardyr.github.io/corinne/arbol.html">
+  <meta property="og:image" content="https://edgardyr.github.io/corinne/recursos/vista-arbol-2.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#FBF4EE">
+  <link rel="icon" href="recursos/corinne-isotipo-color.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="estilo.css">
+  <script type="importmap">
+  { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
+      "clipper-lib": "https://cdn.jsdelivr.net/npm/clipper-lib@6.4.2/+esm",
+      "opentype.js": "https://cdn.jsdelivr.net/npm/opentype.js@1.3.4/dist/opentype.module.js",
+      "fflate": "https://cdn.jsdelivr.net/npm/fflate@0.8.2/esm/browser.js"
+  } }
+  </script>
+</head>
+<body>
+  <header class="cabecera">
+    <img src="recursos/corinne-logo-horizontal-color.svg" alt="corinne" class="logo">
+  </header>
+  <nav class="pestanas" aria-label="Productos">
+    <a href="index.html">Clicker</a>
+    <a href="arbol.html" aria-current="page">Árbol de Navidad</a>
+  </nav>
+
+  <main class="disposicion">
+    <section class="escenario" aria-label="Vista 3D de tu árbol">
+      <canvas id="lienzo"></canvas>
+      <div class="escenario-botones">
+        <button type="button" class="chip" id="btn-medidas" aria-pressed="true">Medidas</button>
+        <button type="button" class="chip" id="btn-navidad">Rojo y verde</button>
+        <button type="button" class="chip" id="btn-centrar">Centrar</button>
+      </div>
+      <p class="pista" id="pista-3d">Arrastra para girar · pellizca para acercar</p>
+      <p class="vacio" id="vacio">Cargando el árbol…</p>
+    </section>
+
+    <div class="panel">
+      <div class="intro">
+        <h1>Árbol de Navidad con sus nombres</h1>
+        <p>Escribe los nombres de tu familia, de arriba hacia abajo, y escoge el color de cada uno. Lo imprimimos en 3D, con su estrella y el año.</p>
+        <p class="aviso-enlace" id="aviso-enlace" hidden>Este es el árbol que te enviaron. Puedes girarlo y cambiar lo que quieras.</p>
+      </div>
+
+      <section class="paso" aria-labelledby="t1">
+        <h2 id="t1"><span class="num">1</span> Tamaño</h2>
+        <div class="segmento" id="tamanos" role="radiogroup" aria-label="Alto del árbol"></div>
+        <p class="ayuda">El alto es fijo; el ancho depende de los nombres. Los árboles más altos son también más gruesos.</p>
+      </section>
+
+      <section class="paso" aria-labelledby="t2">
+        <h2 id="t2"><span class="num">2</span> Nombres</h2>
+        <div class="lista-nombres" id="nombres"></div>
+        <button type="button" class="enlace" id="btn-nombre">+ Agregar nombre</button>
+        <p class="ayuda">El primero va arriba, junto a la estrella. Toca el círculo para cambiarle el color. Hasta <span id="max-nombres"></span> nombres de <span id="max-letras"></span> letras; cada nombre se estira al ancho de su fila.</p>
+      </section>
+
+      <section class="paso" aria-labelledby="t3">
+        <h2 id="t3"><span class="num">3</span> Estrella y año</h2>
+        <h3>Estrella</h3>
+        <div class="muestras" id="color-estrella" role="radiogroup" aria-label="Color de la estrella"></div>
+        <h3>Año</h3>
+        <div class="segmento" id="con-ano" role="radiogroup" aria-label="Año">
+          <button type="button" role="radio" data-ano="si">Con año</button>
+          <button type="button" role="radio" data-ano="no">Sin año</button>
+        </div>
+        <div id="bloque-ano">
+          <div class="fila-ano">
+            <label class="etiqueta" for="ano">Año</label>
+            <input id="ano" class="campo" inputmode="numeric" maxlength="4" autocomplete="off">
+          </div>
+          <div class="muestras" id="color-ano" role="radiogroup" aria-label="Color del año"></div>
+          <p class="ayuda">El año se encaja sin pegamento: la próxima Navidad lo cambias por el nuevo.</p>
+        </div>
+      </section>
+
+      <section class="paso" aria-labelledby="t4">
+        <h2 id="t4"><span class="num">4</span> Tu pedido</h2>
+        <p class="medidas" id="medidas"></p>
+        <div class="detalle" id="detalle"></div>
+        <ul class="notas" id="notas"></ul>
+        <p class="ayuda" id="texto-pagos"></p>
+      </section>
+
+      <section class="paso taller" id="taller" aria-labelledby="t5" hidden>
+        <h2 id="t5"><span class="num">⚙</span> Taller</h2>
+        <p class="ayuda">Una pieza por fila, para imprimir una placa por color y pegar. El frente va contra la cama.</p>
+        <div id="tabla-taller"></div>
+        <button type="button" class="boton ancho" id="btn-zip">Descargar las piezas (ZIP con STL)</button>
+        <p class="ayuda" id="estado-zip" role="status"></p>
+      </section>
+    </div>
+  </main>
+
+  <p class="aviso" id="aviso" role="status" aria-live="polite"></p>
+
+  <div class="barra" id="barra">
+    <div class="barra-total"><span>Total a tasa BCV</span><strong id="total">$0,00</strong><small id="total-divisas"></small></div>
+    <button type="button" class="boton" id="btn-pedir">Pedir por WhatsApp</button>
+  </div>
+
+  <dialog id="dlg-pedido" class="hoja">
+    <div class="hoja-cuerpo">
+      <div class="hoja-cabeza">
+        <h2 id="pedido-titulo">Tu pedido</h2>
+        <button type="button" class="cerrar" id="pedido-cerrar" aria-label="Cerrar">✕</button>
+      </div>
+      <form id="form-datos">
+        <p class="ayuda">Primero, tus datos para anotar tu pedido.</p>
+        <label class="etiqueta" for="dato-nombre">Tu nombre</label>
+        <input id="dato-nombre" class="campo" required autocomplete="name">
+        <label class="etiqueta" for="dato-tel">Tu teléfono (WhatsApp)</label>
+        <input id="dato-tel" class="campo" required inputmode="tel" autocomplete="tel" placeholder="0424-0000000">
+        <button class="boton ancho" type="submit">Continuar</button>
+      </form>
+      <div id="paso-envio" hidden>
+        <img id="foto-pedido" class="foto-pedido" alt="Foto de tu árbol">
+        <ol class="pasos-envio">
+          <li><strong>Abre WhatsApp</strong> y envía el mensaje que ya va escrito.</li>
+          <li><strong>Envía la foto</strong> de tu árbol en el mismo chat.</li>
+        </ol>
+        <a class="boton ancho" id="btn-whatsapp" target="_blank" rel="noopener">1. Abrir WhatsApp con mi pedido</a>
+        <button type="button" class="boton ancho secundario" id="btn-foto">2. Enviar la foto</button>
+        <button type="button" class="enlace" id="btn-copiar">Copiar el texto del pedido</button>
+        <p class="ayuda" id="estado-envio" role="status"></p>
+      </div>
+    </div>
+  </dialog>
+
+  <script type="module" src="js-202611151347/arbol/appArbol.js"></script>
+</body>
+</html>

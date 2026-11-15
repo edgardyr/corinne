@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Arma tu clicker · corinne</title>
+  <meta name="description" content="Escribe tu nombre, escoge los colores y los charms: te lo imprimimos en 3D con un pulsador que hace clic.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="corinne">
+  <meta property="og:title" content="Arma tu clicker · corinne">
+  <meta property="og:description" content="Tu nombre, tus colores, y cada tecla hace clic de verdad.">
+  <meta property="og:url" content="https://edgardyr.github.io/corinne/">
+  <meta property="og:image" content="https://edgardyr.github.io/corinne/recursos/vista-clicker.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#FBF4EE">
+  <link rel="icon" href="recursos/corinne-isotipo-color.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600&family=Montserrat:wght@400;500;600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="estilo.css">
+  <script type="importmap">
+  { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  } }
+  </script>
+</head>
+<body>
+  <header class="cabecera">
+    <img src="recursos/corinne-logo-horizontal-color.svg" alt="corinne" class="logo">
+  </header>
+  <nav class="pestanas" aria-label="Productos">
+    <a href="index.html" aria-current="page">Clicker</a>
+    <a href="arbol.html">Árbol de Navidad</a>
+  </nav>
+
+  <main class="disposicion">
+    <section class="escenario" aria-label="Vista 3D de tu clicker">
+      <canvas id="lienzo"></canvas>
+      <div class="escenario-botones">
+        <button type="button" class="chip" id="btn-azar">Colores al azar</button>
+        <button type="button" class="chip" id="btn-centrar">Centrar</button>
+      </div>
+      <p class="pista" id="pista-3d">Arrastra para girar · clic derecho o dos dedos para mover · toca una tecla para cambiarla</p>
+      <p class="vacio" id="vacio">Escribe tu palabra para ver tu clicker</p>
+    </section>
+
+    <div class="panel">
+      <div class="intro">
+        <h1>Arma tu clicker</h1>
+        <p>Escribe tu nombre o tu palabra, escoge los colores y los charms. Te lo imprimimos en 3D y cada tecla hace clic de verdad.</p>
+        <p class="aviso-enlace" id="aviso-enlace" hidden>Este es el diseño que te enviaron. Puedes girarlo y cambiar lo que quieras.</p>
+      </div>
+
+      <section class="paso" aria-labelledby="t1">
+        <h2 id="t1"><span class="num">1</span> Tu palabra</h2>
+        <input id="palabra" class="campo-palabra" maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="KARELYN" aria-describedby="ayuda-palabra">
+        <div class="simbolos" id="simbolos"></div>
+        <p class="ayuda" id="ayuda-palabra">Hasta <span id="max-teclas"></span> teclas. Letras, números y los símbolos de arriba. <strong id="precio-tecla"></strong> cada tecla, con base y llavero metálico incluidos.</p>
+      </section>
+
+      <section class="paso" aria-labelledby="t2">
+        <h2 id="t2"><span class="num">2</span> Colores</h2>
+        <h3>Base</h3>
+        <div class="segmento" id="tipo-base" role="radiogroup" aria-label="Tipo de base"></div>
+        <div class="muestras" id="color-base" role="radiogroup" aria-label="Color de la base"></div>
+
+        <h3>Teclas</h3>
+        <div class="segmento" id="modo-teclas" role="radiogroup" aria-label="Cómo pintar las teclas">
+          <button type="button" role="radio" data-modo="iguales">Todas iguales</button>
+          <button type="button" role="radio" data-modo="combinadas">Una por una</button>
+        </div>
+        <div id="bloque-iguales">
+          <p class="etiqueta">Color de las teclas</p>
+          <div class="muestras" id="color-teclas" role="radiogroup" aria-label="Color de las teclas"></div>
+          <p class="etiqueta">Color de las letras</p>
+          <div class="muestras" id="color-letras" role="radiogroup" aria-label="Color de las letras"></div>
+        </div>
+        <div id="bloque-combinadas" hidden>
+          <p class="etiqueta">Toca una tecla (aquí o en el 3D) para cambiarle el color o la letra.</p>
+          <div class="fila-teclas" id="fila-teclas"></div>
+        </div>
+
+        <h3>Tipografía</h3>
+        <div class="segmento" id="tipografia" role="radiogroup" aria-label="Tipografía"></div>
+        <p class="ayuda">Los colores dependen del filamento disponible; si alguno se agota, te avisamos por WhatsApp.</p>
+      </section>
+
+      <section class="paso" aria-labelledby="t3">
+        <h2 id="t3"><span class="num">3</span> Colgante y charms</h2>
+        <h3>¿Con qué lo cuelgas?</h3>
+        <p class="ayuda">El llavero metálico viene incluido. Si prefieres, cámbialo por una cadenita con mosquetón del color que quieras.</p>
+        <div class="opciones" id="colgantes" role="radiogroup" aria-label="Con qué se cuelga el clicker"></div>
+        <div id="bloque-impreso" hidden>
+          <p class="etiqueta">Color de la cadenita y el mosquetón</p>
+          <div class="muestras" id="color-colgante" role="radiogroup" aria-label="Color de la cadenita y el mosquetón"></div>
+        </div>
+
+        <h3>Charms</h3>
+        <p class="ayuda" id="nota-charms" hidden>Los charms van solo con el llavero metálico. Si quieres ponerle charms, elige el llavero arriba.</p>
+        <div id="bloque-charms">
+          <p class="ayuda"><strong>Solo para el llavero metálico.</strong> Un toque lo pone y otro lo quita. Si quieres dos iguales, usa «+ Otro igual» en la lista de abajo.</p>
+          <div class="catalogo" id="cat-charms"></div>
+
+          <div class="agregados" id="agregados"></div>
+
+          <h3>Charm personalizado</h3>
+          <p class="ayuda">Cuéntanos qué quieres (una inicial, tu mascota, un dibujo). Te lo diseñamos y te confirmamos el precio por WhatsApp. <strong id="precio-personalizado"></strong> cada uno.</p>
+          <div id="personalizados"></div>
+          <button type="button" class="enlace" id="btn-personalizado">+ Agregar charm personalizado</button>
+        </div>
+      </section>
+
+      <section class="paso" aria-labelledby="t4">
+        <h2 id="t4"><span class="num">4</span> Tu pedido</h2>
+        <div id="carrito"></div>
+        <div class="detalle" id="detalle"></div>
+        <button type="button" class="boton secundario" id="btn-otro">+ Armar otro clicker</button>
+        <p class="ayuda">¿Quieres varios? Guarda este y arma el siguiente: todos van en el mismo pedido.</p>
+        <p class="ayuda" id="texto-pagos"></p>
+      </section>
+    </div>
+  </main>
+
+  <p class="aviso" id="aviso" role="status" aria-live="polite"></p>
+
+  <div class="barra" id="barra">
+    <div class="barra-total"><span>Total</span><strong id="total">$0,00</strong></div>
+    <button type="button" class="boton" id="btn-pedir">Pedir por WhatsApp</button>
+  </div>
+
+  <!-- Editor de una tecla -->
+  <dialog id="editor" class="hoja">
+    <form method="dialog" class="hoja-cuerpo">
+      <div class="hoja-cabeza">
+        <h2 id="editor-titulo">Tecla 1</h2>
+        <button class="cerrar" value="cerrar" aria-label="Cerrar">✕</button>
+      </div>
+      <label class="etiqueta" for="editor-letra">Letra</label>
+      <input id="editor-letra" class="campo-letra" maxlength="2" autocomplete="off" autocapitalize="characters">
+      <p class="etiqueta">Color de la tecla</p>
+      <div class="muestras" id="editor-tecla"></div>
+      <p class="etiqueta">Color de la letra</p>
+      <div class="muestras" id="editor-color-letra"></div>
+      <div class="hoja-pie">
+        <button type="button" class="boton secundario" id="editor-ant">‹ Anterior</button>
+        <button type="button" class="boton peligro" id="editor-quitar">Quitar tecla</button>
+        <button type="button" class="boton secundario" id="editor-sig">Siguiente ›</button>
+      </div>
+      <button class="boton ancho" value="listo">Listo</button>
+    </form>
+  </dialog>
+
+  <!-- Datos y envío del pedido -->
+  <dialog id="dlg-pedido" class="hoja">
+    <div class="hoja-cuerpo">
+      <div class="hoja-cabeza">
+        <h2 id="pedido-titulo">Tu pedido</h2>
+        <button type="button" class="cerrar" id="pedido-cerrar" aria-label="Cerrar">✕</button>
+      </div>
+      <form id="form-datos">
+        <p class="ayuda">Primero, tus datos para anotar tu pedido.</p>
+        <label class="etiqueta" for="dato-nombre">Tu nombre</label>
+        <input id="dato-nombre" class="campo" required autocomplete="name">
+        <label class="etiqueta" for="dato-tel">Tu teléfono (WhatsApp)</label>
+        <input id="dato-tel" class="campo" required inputmode="tel" autocomplete="tel" placeholder="0424-0000000">
+        <button class="boton ancho" type="submit">Continuar</button>
+      </form>
+      <div id="paso-envio" hidden>
+        <img id="foto-pedido" class="foto-pedido" alt="Foto de tu diseño">
+        <ol class="pasos-envio">
+          <li><strong>Abre WhatsApp</strong> y envía el mensaje que ya va escrito.</li>
+          <li><strong>Envía la foto</strong> de tu diseño en el mismo chat. Sin la foto no podemos ver tu diseño, ¡no la olvides!</li>
+        </ol>
+        <a class="boton ancho" id="btn-whatsapp" target="_blank" rel="noopener">1. Abrir WhatsApp con mi pedido</a>
+        <button type="button" class="boton ancho secundario" id="btn-foto">2. Enviar la foto</button>
+        <button type="button" class="enlace" id="btn-copiar">Copiar el texto del pedido</button>
+        <p class="ayuda" id="estado-envio" role="status"></p>
+      </div>
+    </div>
+  </dialog>
+
+  <script type="module" src="js-202611151347/app.js"></script>
+</body>
+</html>
